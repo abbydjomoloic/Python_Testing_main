@@ -1,3 +1,4 @@
+from datetime import datetime
 import json
 from flask import Flask, render_template, request, redirect, flash, url_for
 
@@ -20,9 +21,15 @@ clubs = loadClubs()
 @app.route('/')
 def index():
     return render_template('index.html')
+ 
+def filter_upcoming_competitions(competitions):
+    """Return a list of competitions that are upcoming."""
+    current_datetime = datetime.now()
+    return [comp for comp in competitions if datetime.strptime(comp["date"], "%Y-%m-%d %H:%M:%S") > current_datetime]
 
 @app.route('/showSummary', methods=['POST'])
 def showSummary():
+    upcoming_competitions = filter_upcoming_competitions(competitions)
     email = request.form.get('email')
     if not email:
         flash("Email is required")
@@ -33,7 +40,7 @@ def showSummary():
         flash("Club not found")
         return redirect(url_for('index'))
 
-    return render_template('welcome.html', club=club, competitions=competitions)
+    return render_template('welcome.html', club=club, competitions=upcoming_competitions)
 
 # Correction du bug login
 
