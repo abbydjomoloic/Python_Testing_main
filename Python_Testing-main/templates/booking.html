@@ -71,12 +71,15 @@
         <h2>Booking for {{ competition['name'] }}</h2>
         <p>Places available: {{ competition['numberOfPlaces'] }}</p>
 
-        {% if error %}
-        <div class="error">
-            {{ error }}
-        </div>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <ul>
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
         {% endif %}
-
+        {% endwith %}
         <form action="/purchasePlaces" method="post">
             <input type="hidden" name="club" value="{{ club['name'] }}">
             <input type="hidden" name="competition" value="{{ competition['name'] }}">
