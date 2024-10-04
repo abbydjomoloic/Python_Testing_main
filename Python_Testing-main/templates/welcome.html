@@ -1,36 +1,151 @@
+<!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Summary | GUDLFT Registration</title>
-</head>
-<body>
-        <h2>Welcome, {{club['email']}} </h2><a href="{{url_for('logout')}}">Logout</a>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
 
-    {% with messages = get_flashed_messages()%}
-    {% if messages %}
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .container:hover {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            margin-bottom: 15px;
+        }
+
+        hr {
+            border: 0;
+            height: 1px;
+            background-color: #ddd;
+            margin: 10px 0;
+        }
+
+        a {
+            text-decoration: none;
+            color: #007bff;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .flash-messages ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .flash-messages li {
+            color: red;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        .logout {
+            text-decoration: none;
+            padding: 5px 10px;
+            background-color: #ff4d4d;
+            color: white;
+            border-radius: 4px;
+            margin-left: 10px;
+            transition: background-color 0.3s ease;
+        }
+
+        .logout:hover {
+            background-color: #e60000;
+        }
+
+        /* Additional styling for hover and transition effects */
+        li:hover {
+            background-color: #f9f9f9;
+            border-radius: 4px;
+            padding: 10px;
+            transition: background-color 0.3s ease;
+        }
+
+        .no-places {
+            color: grey;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h2>Welcome, {{ club['email'] }}</h2>
+        <a href="{{ url_for('logout') }}" class="logout" aria-label="Logout from your account">Logout</a>
+
+        <!-- Display flashed messages -->
+        <div class="flash-messages">
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <ul>
+                {% for message in messages %}
+                <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            {% endwith %}
+        </div>
+
+        <p><strong>Points available:</strong> {{ club['points'] }}</p>
+
+        <h3>Competitions:</h3>
         <ul>
-       {% for message in messages %}
-            <li>{{message}}</li>
-        {% endfor %}
-       </ul>
-    {% endif%}
-    Points available: {{club['points']}}
-    <h3>Competitions:</h3>
-    <ul>
-        {% for comp in competitions%}
-        <li>
-            {{comp['name']}}<br />
-            Date: {{comp['date']}}</br>
-            Number of Places: {{comp['numberOfPlaces']}}
-            {%if comp['numberOfPlaces']|int >0%}
-            <a href="{{ url_for('book',competition=comp['name'],club=club['name']) }}">Book Places</a>
-            {%endif%}
-        </li>
-        <hr />
-        {% endfor %}
-    </ul>
-    {%endwith%}
+            {% for comp in competitions %}
+            <li>
+                <strong>{{ comp['name'] }}</strong><br />
+                Date: {{ comp['date'] }}<br />
+                Number of Places: {{ comp['numberOfPlaces'] }}
+                {% if comp['numberOfPlaces']|int > 0 %}
+                <br /><a href="{{ url_for('book', competition=comp['name'], club=club['name']) }}" aria-label="Book places for {{ comp['name'] }}">Book Places</a>
+                {% else %}
+                <br /><span class="no-places">No more places available</span>
+                {% endif %}
+            </li>
+            <hr />
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- JavaScript to add some interactivity -->
+    <script>
+        // Confirmation before booking places
+        document.querySelectorAll('a[href*="book"]').forEach(function (link) {
+            link.addEventListener('click', function (e) {
+                if (!confirm('Are you sure you want to book places for this competition?')) {
+                    e.preventDefault();
+                }
+            });
+        });
+    </script>
 
 </body>
+
 </html>
